@@ -24,7 +24,7 @@ DetectHiddenWindows, On
 #include OVclass.ahk
 #include CaptureScreen.ahk
 Debug_console =0
-Version=1.02
+Version=1.03
 gosub Help
 
 
