@@ -20,10 +20,10 @@ CoordMode, ToolTip, Screen
 DetectHiddenWindows, On
 #NoTrayIcon
 
-;#include debugv2.ahk
+#include debugv2.ahk
 #include OVclass.ahk
 #include CaptureScreen.ahk
-Debug_console =1
+Debug_console =0
 Version=1.02
 gosub Help
 
@@ -72,6 +72,7 @@ Gui, me:  Font, s8
 Gui, me:  Add, GroupBox, x10 w275 h310 y+30, Visual
 Gui, me:  Font, s10
 Gui, me:  Add, CheckBox, x20 y+-290  h25  gFOV vFOV,  Field of View
+Gui, me:  Add, CheckBox, x130 y+-25  h25 vPermaScan, PermaScan
 Gui, me:  Add, Text, x20 y+10 w150 vFOVpixeltext, Field of View   %FOVpixel%    
 Gui, me:  Add, Slider,x15 y+1 h30 w180 +BackgroundTrans vFOVpixel Range5-350  , 200 
 Gui, me:  Add, Text, x20 y+10 w200 vFOVTranstext , Field of View Transparents %FOVTrans%
@@ -81,7 +82,7 @@ Gui, me:  Add, Slider,x15 y+5  w150 +BackgroundTrans vweitenk Range-30-30  , 0
 Gui, me:  Add, CheckBox, x20 y+10 h25 gscancircle vscancircle,  Scan Circle 
 Gui, me:  Add, CheckBox, x120 y+-25  h25 vtargetline, Target Line 
 Gui, me:  Add, CheckBox, x20 y+10  h25 gCrossHair vCrossHair, CrossHair
-Gui, me:  Add, CheckBox, x120 y+-25  h25 vPermaScan, PermaScan
+Gui, me:  Add, CheckBox, x120 y+-25  h25 vesp, ESP
 
 
 Gui, me:  Font, s8
@@ -112,6 +113,8 @@ return
 
 controls:
 Gui,me:  Submit , NoHide
+
+;Debug("das ist eine variable [" eps "]`n",0)
 IfWinNotActive, ahk_id %meID%
 	{
 	allscan:=scancircle+targetline
@@ -119,9 +122,21 @@ IfWinNotActive, ahk_id %meID%
 		if qbot=1
 			gosub qbotrun
 		
+	Target := GetKeyState(TargetButton)
 
-		if allscan between 1 and 2
+		if Target=0
+		{
+			if allscan between 1 and 2
 			gosub Scanner
+		
+	
+			if esp=1 
+			eps:=ESPBox(x, y, FOVpixel,Farbe,Farbvariante,FOVTrans)
+		}
+		
+		
+		
+		
 	
 	}	
 		
@@ -140,6 +155,7 @@ IfWinActive , ahk_id %meID%
 	GuiControl,me:, Farbvariantetext, Colour variant  %Farbvariante%    
 	y :=A_ScreenHeight/2-weitenk
 	WinMove , mcircle, ,A_ScreenWidth*5,A_ScreenWidth*5,
+	WinMove , ESPGui, ,0,0,0,0
 	
 	if FOV=1 
 		 gosub FOV 
@@ -159,6 +175,7 @@ Target := GetKeyState(TargetButton)
 if Target=1
 {
 WinMove , mcircle, ,A_ScreenWidth*5,A_ScreenWidth*5,
+WinMove , ESPGui, ,0,0,0,0
 Pixelmittesuche(x, y, FOVpixel-3,Farbe,Farbvariante)
 
 
@@ -261,7 +278,7 @@ if FOV=1
 		if ta != %te%
 		{
 		IniWrite, %FOVpixel%, config.ini, FOV,FOVpixel
-		hCircle := makeCircle(0xFFFFFF, r := FOVpixel+5, 2, FOVTrans,weitenk)
+		hCircle := makeCircle(0xFFFFFF, r := FOVpixel+5, 1, FOVTrans,weitenk)
 		te:=FOVpixel+weitenk+FOVTrans
 		IniWrite, %FOVpixel%, config.ini, FOV,FOVpixel
 		if CrossHair=1
