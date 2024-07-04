@@ -1,4 +1,4 @@
-﻿#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
+#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 ; #Warn  ; Enable warnings to assist with detecting common errors.
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
@@ -228,3 +228,57 @@ MsiMessageBox(Text, Title := "", Options := 0, Owner := 0) {
     Return {1: "OK", 2: "Cancel", 3: "Cancel", 4: "Retry", 5: "Ignore", 6: "Yes", 7: "No", 10: "Try Again"}[Ret]
 }
 
+
+
+
+
+
+
+
+ESPBox(x, y, FOVpixel,Farbe,Farbvariante,transparency) {
+static clean
+
+
+IfWinNotExist,ESPGui
+	{
+	Gui, ESPGui: -Caption +AlwaysOnTop +ToolWindow +LastFound
+	Gui, ESPGui: Margin, 1, 1
+   	Gui, ESPGui: Color, 0xf6f6f6
+	Gui, ESPGui: Add, text, vclean +BackgroundWhite x1 y1 w1 h1 0x6
+	Gui, ESPGui: Show,% w1 h1 x0 y0 NoActivate  ,ESPGui
+	WinSet, TransColor,White %transparency%,ESPGui
+	
+	}
+	WinSet, TransColor,White %transparency%,ESPGui
+
+
+	PixelSearch, ESPx, ESPy,x-FOVpixel, y-FOVpixel, x+FOVpixel, y+FOVpixel, Farbe, Farbvariante, FAST RGB
+	If !ErrorLevel
+	{
+			PixelSearch, ESPx2, ESPy2,ESPx+FOVpixel, ESPy+FOVpixel, ESPx-FOVpixel, ESPy-FOVpixel, Farbe, Farbvariante, FAST RGB
+			If !ErrorLevel
+			{
+			ESPhohe:=ESPy2-ESPy
+			ESPbreite:=ESPhohe/8*2
+			
+						
+			if ESPbreite > ESPhohe
+				ESPbreite:=ESPhohe
+
+			GuiControl, ESPGui: Move, clean,% "w" ESPbreite+ESPbreite-2  "h"ESPhohe-2
+			WinMove , ESPGui, ,ESPx-ESPbreite,ESPy,ESPbreite+ESPbreite,ESPhohe
+			
+			
+			}
+	}
+
+	if ESPhohe=
+		WinMove , ESPGui, ,0,0,0,0
+		
+		
+	return ESPhohe, ESPbreite
+	
+
+
+
+}
