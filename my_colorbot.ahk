@@ -20,7 +20,7 @@ CoordMode, ToolTip, Screen
 DetectHiddenWindows, On
 #NoTrayIcon
 
-#include debugv2.ahk
+
 #include OVclass.ahk
 #include CaptureScreen.ahk
 Debug_console =0
@@ -114,7 +114,7 @@ return
 controls:
 Gui,me:  Submit , NoHide
 
-;Debug("das ist eine variable [" eps "]`n",0)
+
 IfWinNotActive, ahk_id %meID%
 	{
 	allscan:=scancircle+targetline
