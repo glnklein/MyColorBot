@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <img src="menue.png" widht="100%" />
+  <img src="menu.PNG" widht="100%" />
 </p>
 
 
