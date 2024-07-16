@@ -235,19 +235,32 @@ MsiMessageBox(Text, Title := "", Options := 0, Owner := 0) {
 
 
 
-ESPBox(x, y, FOVpixel,Farbe,Farbvariante,transparency) {
+ESPBox(x, y, FOVpixel,Farbe,Farbvariante,transparency,ESPon,distanceon) {
 static clean
+static entfernung
 
 
 IfWinNotExist,ESPGui
 	{
+	Gui, ESPGui:  Font, s10 q2,Arial
 	Gui, ESPGui: -Caption +AlwaysOnTop +ToolWindow +LastFound
 	Gui, ESPGui: Margin, 1, 1
    	Gui, ESPGui: Color, 0xf6f6f6
-	Gui, ESPGui: Add, text, vclean +BackgroundWhite x1 y1 w1 h1 0x6
+	Gui, ESPGui: Add, text, vclean cgree +BackgroundWhite x1 y1 w1 h1 0x6,
+	;Gui, ESPGui: Add, text, cf6f6f6  +BackgroundTrans ventfernung   x1 y1 ,149 m
 	Gui, ESPGui: Show,% w1 h1 x0 y0 NoActivate  ,ESPGui
 	WinSet, TransColor,White %transparency%,ESPGui
 	
+	
+	Gui, entfe:  Font, s10 q4,Arial
+	Gui, entfe: -Caption +AlwaysOnTop +ToolWindow +LastFound
+	Gui, entfe: Margin, 1, 1
+	Gui, entfe: Color, White
+	;Gui, entfe: Add, text, vclean cgree +BackgroundWhite x1 y1 w1 h1 0x6,
+	Gui, entfe: Add, text, cf6f6f6  +BackgroundTrans ventfernung  w200  x1 y1 ,149 m
+	Gui, entfe: Show,% w221 h1 x0 y0 NoActivate ,entfe
+	WinSet, TransColor,White %transparency%,entfe
+
 	}
 	WinSet, TransColor,White %transparency%,ESPGui
 
@@ -258,24 +271,41 @@ IfWinNotExist,ESPGui
 			PixelSearch, ESPx2, ESPy2,ESPx+FOVpixel, ESPy+FOVpixel, ESPx-FOVpixel, ESPy-FOVpixel, Farbe, Farbvariante, FAST RGB
 			If !ErrorLevel
 			{
+
 			ESPhohe:=ESPy2-ESPy
 			ESPbreite:=ESPhohe/8*2
 			
 						
 			if ESPbreite > ESPhohe
 				ESPbreite:=ESPhohe
-
-			GuiControl, ESPGui: Move, clean,% "w" ESPbreite+ESPbreite-2  "h"ESPhohe-2
-			WinMove , ESPGui, ,ESPx-ESPbreite,ESPy,ESPbreite+ESPbreite,ESPhohe
+				
+				
+			ergebnis:=	4500/ESPhohe
+			ergebnis:= % Round(ergebnis, -1)
+				
 			
+			if distanceon=1
+			{
+				GuiControl, entfe:Text, entfernung ,%ergebnis% m
+				GuiControl, entfe: Move, entfernung,% "y" ESPhohe-15
+				WinMove ,entfe, ,ESPx-ESPbreite,ESPy+15,ESPbreite+ESPbreite+250,ESPhohe
+			}
+			
+			
+			if ESPon=1
+				{
+				GuiControl, ESPGui: Move, clean,% "w" ESPbreite+ESPbreite-2  "h"ESPhohe-2-0
+				WinMove , ESPGui, ,ESPx-ESPbreite,ESPy,ESPbreite+ESPbreite,ESPhohe
+				}
 			
 			}
 	}
 
 	if ESPhohe=
+		{
 		WinMove , ESPGui, ,0,0,0,0
-		
-		
+		WinMove , entfe, ,0,0,0,0
+		}
 	return ESPhohe, ESPbreite
 	
 
