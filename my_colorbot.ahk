@@ -19,15 +19,19 @@ CoordMode, Mouse, Screen
 CoordMode, ToolTip, Screen
 DetectHiddenWindows, On
 #NoTrayIcon
-
-
 #include OVclass.ahk
 #include CaptureScreen.ahk
-Debug_console =0
-Version=1.03
-gosub Help
+Version=1.04
 
 
+
+Gosub Help
+
+if !FileExist("config.ini")
+{
+
+FileInstall,config.ini, %A_ScriptDir%\config.ini, 1
+}
 
 if !FileExist("\img\mcircle.bmp")
 {
@@ -47,11 +51,11 @@ tcolor    = 00FF00
 
 key_mapping:="LButton|RButton|MButton|XButton1|XButton2|Space|Enter|Return|Escape|Backspace|ScrollLock|Delete|Home|PgUp|PgDn|Up|Down|Left|Right|Numpad0|Numpad1|Numpad2|Numpad3|Numpad4|Numpad5|Numpad6|Numpad7|Numpad8|Numpad9|NumpadDot|NumpadDiv|NumpadMult|NumpadAdd|NumpadSub|NumpadEnter|F2|F3|F4|F5|F6|F7|F8|F9|F10|F11|LWin|RWin|Shift|LControl|RControl|LShift|RShift|LAlt|RAlt|Browser_Back|Browser_Forward|Browser_Refresh|Browser_Stop|Browser_Search|Browser_Favorites||Browser_Home|Volume_Mute|Volume_Down|Volume_Up|Media_Next|Media_Prev|Media_Stop|Media_Play_Pause|Launch_Mail|Launch_Media|Launch_App1|Launch_App2|"
 iniRead, TargetButton, config.ini, Keys,TargetButton
-tkey:=TargetButton
 iniRead, GUIbackround, config.ini, GUIColor,GUIbackround
 iniRead, GUIfonds, config.ini, GUIColor,GUIfonds
 iniRead, Farbe, config.ini, Color,color_selected
 iniRead, FOVpixel, config.ini, FOV,FOVpixel
+tkey:=TargetButton
 
 Gui, me:  Color, %GUIbackround%
 Gui, me:  Font, s10 c%GUIfonds%
@@ -76,14 +80,14 @@ Gui, me:  Add, CheckBox, x130 y+-25  h25 vPermaScan, PermaScan
 Gui, me:  Add, Text, x20 y+10 w150 vFOVpixeltext, Field of View   %FOVpixel%    
 Gui, me:  Add, Slider,x15 y+1 h30 w180 +BackgroundTrans vFOVpixel Range5-350  , 200 
 Gui, me:  Add, Text, x20 y+10 w200 vFOVTranstext , Field of View Transparents %FOVTrans%
-Gui, me:  Add, Slider,x15 y+1 h30 w180 +BackgroundTrans vFOVTrans Range5-255  ,60
+Gui, me:  Add, Slider,x15 y+1 h30 w180 +BackgroundTrans vFOVTrans Range5-255  ,240
 Gui, me:  Add, Text, x20 y+10 w220 vweitenktext,Field of View height correction   %weitenk%    
 Gui, me:  Add, Slider,x15 y+5  w150 +BackgroundTrans vweitenk Range-30-30  , 0
 Gui, me:  Add, CheckBox, x20 y+10 h25 gscancircle vscancircle,  Scan Circle 
 Gui, me:  Add, CheckBox, x120 y+-25  h25 vtargetline, Target Line 
 Gui, me:  Add, CheckBox, x20 y+10  h25 gCrossHair vCrossHair, CrossHair
 Gui, me:  Add, CheckBox, x120 y+-25  h25 vesp, ESP
-
+Gui, me:  Add, CheckBox, x180 y+-25  h25 vdistance, Distance
 
 Gui, me:  Font, s8
 Gui, me:  Add, GroupBox, x10 w275 h200 y+30, Color
@@ -117,11 +121,13 @@ Gui,me:  Submit , NoHide
 
 IfWinNotActive, ahk_id %meID%
 	{
-	allscan:=scancircle+targetline
 	
+	
+	allscan:=scancircle+targetline
+	espallon:=esp+distance
 		if qbot=1
 			gosub qbotrun
-		
+	permaon:	
 	Target := GetKeyState(TargetButton)
 
 		if Target=0
@@ -130,14 +136,13 @@ IfWinNotActive, ahk_id %meID%
 			gosub Scanner
 		
 	
-			if esp=1 
-			eps:=ESPBox(x, y, FOVpixel,Farbe,Farbvariante,FOVTrans)
+			if espallon between 1 and 2
+			{
+			gosub ESPall
+			
+			}
 		}
-		
-		
-		
-		
-	
+
 	}	
 		
 StartControl:
@@ -156,12 +161,13 @@ IfWinActive , ahk_id %meID%
 	y :=A_ScreenHeight/2-weitenk
 	WinMove , mcircle, ,A_ScreenWidth*5,A_ScreenWidth*5,
 	WinMove , ESPGui, ,0,0,0,0
-	
+	WinMove , entfe, ,0,0,0,0
 	if FOV=1 
 		 gosub FOV 
 	
 	if CrossHair=1 
 		 WinMove , CrossHair, ,,A_ScreenHeight/2-weitenk,
+		gosub ESPall
 	}
 
 return
@@ -175,7 +181,8 @@ Target := GetKeyState(TargetButton)
 if Target=1
 {
 WinMove , mcircle, ,A_ScreenWidth*5,A_ScreenWidth*5,
-WinMove , ESPGui, ,0,0,0,0
+		WinMove , ESPGui, ,0,0,0,0
+		WinMove , entfe, ,0,0,0,
 Pixelmittesuche(x, y, FOVpixel-3,Farbe,Farbvariante)
 
 
@@ -213,9 +220,32 @@ Pixelmittesuche(x, y, FOVpixel-3,Farbe,Farbvariante)
 
 bneux =
 bneuy =
+return
 
+
+ESPall:
+
+
+MouseRButton := GetKeyState("RButton")
+
+	if PermaScan = 1
+		MouseRButton = 1 
+
+	if MouseRButton = 1 
+			{
+
+			ESPBox(x, y, FOVpixel,Farbe,Farbvariante,FOVTrans,esp,distance)
+			}
+			else
+			{
+			
+			WinMove , ESPGui, ,0,0,0,0
+			WinMove , entfe, ,0,0,0,
+			
+			}
 
 return
+
 
 Scanner:
 Target := GetKeyState(TargetButton)
@@ -247,11 +277,7 @@ if Target=0
 			
 			if targetline = 1
 				Canvas_DrawLine(GuiHwnd, x, y*2, bneux+x, bneuy+y+15, 1, tcolor)
-			
-			
-			
 
-					
 			}
 
 }
@@ -262,12 +288,6 @@ if Target=1
 WinMove , mcircle, ,A_ScreenWidth*5,A_ScreenWidth*5,
 
 return
-
-
-
-
-
-
 
 fov:
 Gui,me:  Submit , NoHide
@@ -331,9 +351,6 @@ Gui,me:  Submit , NoHide
 return
 
 
-
-
-
 F1::
 Help:
 Text := "`nF12 = Create Screenshot `n`nINSERT = Hidden/Show menu `n`nSTRG+X = Apply color under mouse cursor `n`nEND = EXIT Bot`n`nEdit Config in config.ini n`n"
@@ -361,7 +378,7 @@ MouseGetPos, MausX, MausY
 PixelGetColor, Farbe, %MausX%, %MausY% ,RGB
 GuiControl, me:+Background%Farbe%,piccolor2,
 IniWrite, %Farbe%, config.ini, Color,color_selected
-
+SoundBeep
 return
 
 Insert::
