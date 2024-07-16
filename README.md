@@ -4,11 +4,11 @@
 
 
 <p align="center">
-  <img src="Screenshot 2024-06-30 003005.jpg" widht="100%" />
+  <img src="Screenshot 2024-06-30 003005.jpg" widht="50%" />
 </p>
 
 <p align="center">
-  <img src="Screenshot 2024-06-30 122903.png" widht="100%" />
+  <img src="menue.png" widht="100%" />
 </p>
 
 
