@@ -1,6 +1,6 @@
 # MyColorBot based on the outlines around enemies in some games,namely: Fortnite , CSGO , APEX , Valorant etc
 
-my little Discord server https://discord.gg/2SddTnWERY
+
 
 ## Screenshots
 
